@@ -13,6 +13,7 @@ local first_easy_motion_key_pressed = false
 local first_key = ""
 local easy_motion_lines = {}
 local separated_words = {}
+local has_autoindent = system.get_file_info("data/plugins/autoindent.lua") or system.get_file_info("data/user/plugins/autoindent.lua")
 
 local function dv()
   return core.active_view
@@ -257,7 +258,11 @@ command.add(nil, {
 
   ["modalediting:insert-on-newline-below"] = function()
     mode = "insert"
-    command.perform("doc:newline-below")
+    if has_autoindent then
+      command.perform("autoindent:newline-below")
+    else
+      command.perform("doc:newline-below")
+    end
   end,
 
   ["modalediting:insert-on-newline-above"] = function()
