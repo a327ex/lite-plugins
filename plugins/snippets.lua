@@ -1,3 +1,14 @@
+--[[
+Define new snippets in the config.snippets table. The first snippet defined, config.snippets.lua.f
+defines the "f" snippet for files that have the ".lua" extension. If you want to define the "def"
+snippet for Python files, you'd do "config.snippets.py.def", after initializing the py table.
+
+Snippet insert positions are defined by "$number", and whenever you press tab you will be moved to
+the next number. If there are multiple insertion points for the same number then whatever is typed
+will be inserted at all those points simultaneously. Pressing ESCAPE cancels the current snippet
+function, reaching its end and pressing TAB once more also cancels it.
+]]--
+
 local config = require "core.config"
 
 config.snippets = {}

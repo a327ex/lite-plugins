@@ -1,3 +1,13 @@
+--[[
+Press ESCAPE to go into normal mode, in this mode you can move around using the "modal+" keybindings
+you find at the bottom of this file. Press I to go back to insert mode. While this plugin is inspired
+by vim, this is not a vim emulator, it only has the most basic movement functions that vim does.
+
+Additionally, it also has easy-motion inspired functionality. In normal mode, press S to start the
+easy-motion functionality, then select wherever you want to go to. With the combination of this with
+all the other keys you should be able to edit text without moving your hand away from the keyboard!
+]]--
+
 local core = require "core"
 local command = require "core.command"
 local keymap = require "core.keymap"
@@ -14,6 +24,8 @@ local first_key = ""
 local easy_motion_lines = {}
 local separated_words = {}
 local has_autoindent = system.get_file_info("data/plugins/autoindent.lua") or system.get_file_info("data/user/plugins/autoindent.lua")
+local easy_motion_color_1 = { common.color "#FFA94D" }
+local easy_motion_color_2 = { common.color "#f7c95c" }
 
 local function dv()
   return core.active_view
@@ -63,8 +75,8 @@ local activate_easy_motion = function()
       easy_motion_lines[word.line] = {}
     end
     if word.head then
-      table.insert(easy_motion_lines[word.line], {col = word.col, text = word.key_1, type = style.syntax.string})
-      table.insert(easy_motion_lines[word.line], {col = word.col+1, text = word.key_2, type = style.syntax.literal})
+      table.insert(easy_motion_lines[word.line], {col = word.col, text = word.key_1, type = easy_motion_color_1})
+      table.insert(easy_motion_lines[word.line], {col = word.col+1, text = word.key_2, type = easy_motion_color_2})
       if #word.tail > 1 then
         table.insert(easy_motion_lines[word.line], {col = word.col+2, text = word.tail:sub(2, #word.tail), type = style.syntax.comment})
       end
@@ -89,7 +101,7 @@ local press_first_easy_motion_key = function(key)
     end
     if word.head then
       if word.key_1 == key then
-        table.insert(easy_motion_lines[word.line], {col = word.col, text = word.key_2, type = black, bg = style.syntax.string})
+        table.insert(easy_motion_lines[word.line], {col = word.col, text = word.key_2, type = black, bg = easy_motion_color_2})
         table.insert(easy_motion_lines[word.line], {col = word.col+1, text = word.tail, type = style.syntax.comment})
       else
         table.insert(easy_motion_lines[word.line], {col = word.col, text = word.head .. word.tail, type = style.syntax.comment})
