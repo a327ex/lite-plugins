@@ -1,7 +1,9 @@
-local snippets = {}
+local config = require "core.config"
 
-snippets.lua = {}
-snippets.lua.f = [[
+config.snippets = {}
+
+config.snippets.lua = {}
+config.snippets.lua.f = [[
 function $1()
   $2
 end
@@ -83,7 +85,7 @@ function keymap.on_key_pressed(k)
   return did_keymap
 end
 
-command.add(nil, {
+command.add("core.docview", {
   ["snippets:expand"] = function()
     if in_snippet then
       current_col_offset = 0
@@ -100,22 +102,25 @@ command.add(nil, {
     else
       local line, col = doc():get_selection()
       local indent = doc().lines[line]:match("^[\t ]*")
-      local extension = doc().filename:match("%.[%w]+$")
+      local extension
+      if doc().filename then
+        extension = doc().filename:match("%.[%w]+$")
+      end
       if extension then
         extension = extension:sub(2, -1)
-        if snippets[extension] then
+        if config.snippets[extension] then
           -- find previous word to check for snippet expansion
           local word_col = 1
           for i = col, 1, -1 do
             local c = doc().lines[line]:sub(i, i)
             if c == " " then
-              word_col = i
+              word_col = i+1
               break
             end
           end
-          local text = doc().lines[line]:sub(word_col, col)
-          for snippet_name, snippet_string in pairs(snippets[extension]) do
-            if text:find(snippet_name) then
+          local text = doc().lines[line]:sub(word_col, col-1)
+          for snippet_name, snippet_string in pairs(config.snippets[extension]) do
+            if text == snippet_name then
               snippet_lines = {}
               for line in snippet_string:gmatch(".-[\n\r]") do
                 table.insert(snippet_lines, line)
@@ -127,7 +132,7 @@ command.add(nil, {
                   if tonumber(p) > snippet_max_index then
                     snippet_max_index = tonumber(p)
                   end
-                  table.insert(snippet_insert_positions, {snippet_number = tonumber(p), line = line + (i-1), col = j})
+                  table.insert(snippet_insert_positions, {snippet_number = tonumber(p), line = line + (i-1), col = col + j - #text - 1})
                 end
               end
               snippet_index = snippet_index + 1
