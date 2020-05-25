@@ -411,7 +411,7 @@ command.add(nil, {
       local line, col = doc():get_selection()
       local line1, col1, line2, col2 = doc():get_selection(true)
       for i = line1, line2 do
-        doc():move_to(function() return i end, dv())
+        doc():move_to(function() return i, 1 end, dv())
         doc():move_to(translate.start_of_line, dv())
         command.perform("doc:indent")
       end
