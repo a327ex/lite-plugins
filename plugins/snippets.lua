@@ -129,6 +129,7 @@ command.add("core.docview", {
               break
             end
           end
+          local pre_text = doc().lines[line]:sub(1, word_col-1)
           local text = doc().lines[line]:sub(word_col, col-1)
           for snippet_name, snippet_string in pairs(config.snippets[extension]) do
             if text == snippet_name then
@@ -149,7 +150,13 @@ command.add("core.docview", {
               snippet_index = snippet_index + 1
               snippet_string = snippet_string:gsub("%$[%d]+", "")
               doc():delete_to(function() return line, word_col end, dv())
-              doc():text_input(indent .. snippet_string)
+              for i, line in ipairs(snippet_lines) do
+                if i == 1 then
+                  doc():text_input(line:gsub("$[%d]+", ""))
+                else
+                  doc():text_input(indent .. line:gsub("%$[%d]+", ""))
+                end
+              end
               for _, p in ipairs(snippet_insert_positions) do
                 if p.snippet_number == snippet_index then
                   doc():set_selection(p.line, p.col, p.line, p.col)
